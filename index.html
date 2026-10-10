@@ -1,0 +1,76 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ハノイの塔</title><style>
+:root{font-family:system-ui,-apple-system,'Hiragino Kaku Gothic ProN',Meiryo,sans-serif;color:#24324a;background:#f5f7fc}*{box-sizing:border-box}body{margin:0;padding:24px 14px}.app{max-width:900px;margin:auto}h1{text-align:center;margin:8px 0 6px;font-size:clamp(26px,5vw,38px)}.intro{text-align:center;color:#62718a;margin:0 0 24px}.panel{background:white;border:1px solid #e2e8f3;border-radius:18px;padding:20px;box-shadow:0 8px 28px #25345a0a}.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center}.controls label{font-weight:700}select,button{font:inherit;border-radius:10px;padding:10px 14px}select{background:#fff;border:1px solid #a9b7cb}button{border:0;background:#eaf0fb;color:#23446c;cursor:pointer;font-weight:700}button:hover{filter:brightness(.96)}button:focus-visible,select:focus-visible,.pole:focus-visible{outline:3px solid #faab42;outline-offset:3px}.primary{background:#275cc5;color:white}button:disabled{opacity:.45;cursor:default}.answer-controls{margin-top:12px}.stats{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:20px 0 10px}.stat{background:#f1f5fb;padding:10px 22px;border-radius:12px;text-align:center;min-width:135px}.stat strong{display:block;font-size:26px;font-variant-numeric:tabular-nums}.stat span{font-size:13px;color:#596b82}.message{text-align:center;font-weight:700;min-height:29px;color:#2359b2;margin:12px 0}.board{display:flex;align-items:stretch;justify-content:space-around;gap:5px;background:linear-gradient(#f5f9ff,#eaf1fc);border-radius:15px;padding:12px 8px 10px;min-height:310px}.pole{position:relative;flex:1;min-width:0;height:285px;cursor:pointer;border:2px solid transparent;border-radius:12px;background:transparent;display:flex;justify-content:flex-end;align-items:center;flex-direction:column;padding:0 5px 27px;transition:background .15s}.pole:hover{background:#dbe8ff66}.pole.selected{border-color:#2865d7;background:#dbe8ff}.rod{position:absolute;width:12px;height:225px;bottom:27px;background:#8498b5;border-radius:9px 9px 0 0;z-index:0}.base{position:absolute;bottom:19px;left:5%;width:90%;height:12px;border-radius:7px;background:#647994}.disks{position:relative;z-index:1;width:100%;height:225px;display:flex;flex-direction:column-reverse;align-items:center;justify-content:flex-start}.disk{height:var(--disk-height,21px);min-height:var(--disk-height,21px);border-radius:7px;border:1px solid #ffffff88;box-shadow:inset 0 -3px 0 #00000013,0 2px 3px #00000018;display:flex;align-items:center;justify-content:center;color:#172f4c;font-size:11px;font-weight:800}.pole.selected .disk:last-child{box-shadow:0 0 0 3px #ffb64e,inset 0 -3px 0 #00000013}.pole-name{position:absolute;bottom:0;font-size:14px;font-weight:700;color:#526783}.note{margin:18px auto 0;max-width:690px;line-height:1.8;color:#54647d}.success{color:#168052}.celebrate{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:#14284dbb;padding:20px}.celebrate.show{display:flex}.celebrate-card{position:relative;text-align:center;background:white;border-radius:26px;padding:35px 25px;max-width:460px;width:100%;box-shadow:0 20px 90px #0005;animation:pop .55s cubic-bezier(.2,1.5,.4,1)}.celebrate-icon{font-size:76px;line-height:1.3}.celebrate-card h2{font-size:clamp(34px,7vw,52px);color:#1557bd;margin:6px 0}.celebrate-card p{font-size:18px;line-height:1.6}.celebrate-card button{background:#275cc5;color:white;margin-top:10px}.confetti{position:absolute;inset:0;overflow:hidden;pointer-events:none}.confetti i{position:absolute;top:-20px;width:9px;height:17px;animation:fall 2.5s linear forwards}@keyframes pop{from{transform:scale(.35);opacity:0}to{transform:scale(1);opacity:1}}@keyframes fall{to{transform:translateY(110vh) rotate(850deg);opacity:.3}}.footer{text-align:center;color:#7a8799;font-size:12px;margin-top:20px}@media(max-width:550px){body{padding:10px 7px}.panel{padding:12px 7px}.board{min-height:270px}.pole{height:250px;padding:0 1px 27px}.rod,.disks{height:192px}.disk{font-size:9px}.stats{gap:8px}.stat{min-width:100px;padding:9px 10px}.stat strong{font-size:21px}}
+</style></head><body><main class="app"><h1>ハノイの塔</h1><p class="intro">円盤をすべて右端の棒に移そう！</p><section class="panel"><div class="controls"><label for="count">円盤の段数</label><select id="count" aria-label="円盤の段数"></select><button id="restart" class="primary">最初から</button><button id="undo">1手戻す</button></div><div class="controls answer-controls"><button id="solution" class="primary">▶ 解答を見る</button><button id="pause" disabled>一時停止</button><button id="endAnswer" disabled>解答確認を終了</button><button id="step">1手進む</button><label for="speed">再生速度</label><select id="speed"><option value="1" selected>通常（1倍）</option><option value="10">10倍</option><option value="100">100倍</option></select></div><div class="stats"><div class="stat"><strong id="moves">0</strong><span>移動回数</span></div><div class="stat"><strong id="minimum">7</strong><span>最小手数</span></div><div class="stat"><strong id="progress">0%</strong><span>解答進捗</span></div></div><p id="message" class="message" aria-live="polite">移動する円盤がある棒を選んでください</p><div id="board" class="board" role="group" aria-label="ハノイの塔の盤面"></div><p class="note"><strong>遊び方：</strong>円盤のある棒をクリックし、次に移動先の棒をクリックします。動かせるのは各棒の一番上の円盤だけです。大きな円盤を小さな円盤の上に置くことはできません。</p></section><p class="footer">このHTMLファイルだけで、オフラインでも遊べます。</p></main><div id="celebrate" class="celebrate" role="dialog" aria-modal="true" aria-label="クリア"><div id="confetti" class="confetti"></div><div class="celebrate-card"><div class="celebrate-icon" id="celebrateIcon">🏆🎉</div><h2 id="celebrateTitle">クリア！</h2><p id="celebrateText"></p><button id="closeCelebrate">ゲームに戻る</button></div></div><script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id), countEl=$('count'),board=$('board'),message=$('message'),movesEl=$('moves'),minimumEl=$('minimum'),progress=$('progress'),undo=$('undo'),solution=$('solution'),pause=$('pause'),step=$('step'),speed=$('speed'),endAnswer=$('endAnswer');
+for(let k=3;k<=64;k++){const o=document.createElement('option');o.value=k;o.textContent=k+'段';countEl.append(o)}countEl.value='3';
+let n=3,rods=[],history=[],selected=null,solutionMode=false,playing=false,timer=null,position=0n;
+let total=7n,celebrated=false,audioCtx=null;
+const colors=['#f1a5a0','#f2bb73','#f4d66e','#a5dca5','#81d4ca','#8fc6f4','#acb7f6','#d2a6ef','#e5a9cf','#d4b59d'];
+const fmt=x=>x.toLocaleString('ja-JP');
+function say(t,win=false){message.textContent=t;message.classList.toggle('success',win)}
+function stop(){playing=false;clearTimeout(timer);timer=null;pause.disabled=true;solution.textContent=solutionMode?'▶ 再生を再開':'▶ 解答を見る'}
+function stateAt(t){const out=[[],[],[]];for(let d=n;d>=1;d--){const moves=(t+(1n<<BigInt(d-1)))>>BigInt(d);const direction=(n+d)%2===0?-1:1;const r=Number(moves%3n);const pole=((direction*r)%3+3)%3;out[pole].push(d)}return out}
+function reset(){hideCelebration();celebrated=false;stop();solutionMode=false;position=0n;n=Number(countEl.value);total=(1n<<BigInt(n))-1n;rods=stateAt(0n);history=[];selected=null;render();say('移動する円盤がある棒を選んでください')}
+function progressText(){if(!solutionMode)return '0%';if(position===total)return '100%';const scaled=position*1000000n/total;return (Number(scaled)/10000).toFixed(4)+'%'}
+function render(){movesEl.textContent=fmt(solutionMode?position:BigInt(history.length));minimumEl.textContent=fmt(total);progress.textContent=progressText();undo.disabled=solutionMode||history.length===0;step.disabled=playing||(solutionMode&&position===total);endAnswer.disabled=!solutionMode;board.replaceChildren();const diskHeight=Math.max(3,Math.min(21,Math.floor(225/n)));board.style.setProperty('--disk-height',diskHeight+'px');for(let i=0;i<3;i++){const p=document.createElement('button');p.type='button';p.className='pole'+(selected===i?' selected':'');p.setAttribute('aria-label',String.fromCharCode(65+i)+'の棒、円盤'+rods[i].length+'枚');const rod=document.createElement('div');rod.className='rod';const base=document.createElement('div');base.className='base';const stack=document.createElement('div');stack.className='disks';for(const d of rods[i]){const disk=document.createElement('div');disk.className='disk';disk.style.width=(24+70*d/n)+'%';disk.style.background=colors[(d-1)%colors.length];disk.textContent=n<=15?d:'';stack.append(disk)}const name=document.createElement('div');name.className='pole-name';name.textContent=String.fromCharCode(65+i)+'の棒';p.append(rod,base,stack,name);p.addEventListener('click',()=>choose(i));board.append(p)}}
+function move(a,b){const disk=rods[a].pop();if(disk===undefined||(rods[b].length&&rods[b].at(-1)<disk)){if(disk!==undefined)rods[a].push(disk);return false}rods[b].push(disk);history.push([a,b]);selected=null;return true}
+function hideCelebration(){$('celebrate').classList.remove('show');$('confetti').replaceChildren()}
+function playFanfare(){
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+  audioCtx=audioCtx||new AC();audioCtx.resume();const start=audioCtx.currentTime+.04;
+  // 華やかな上昇フレーズと最後の和音。音声ファイル不要。
+  const melody=[[523.25,0,.14],[659.25,.14,.14],[783.99,.28,.14],[1046.5,.42,.22],
+   [987.77,.69,.12],[1046.5,.82,.12],[1174.66,.95,.12],[1318.51,1.08,.32],
+   [1046.5,1.48,.12],[1174.66,1.61,.12],[1318.51,1.74,.12],[1567.98,1.87,.55]];
+  const note=(freq,offset,duration,type='triangle',volume=.11)=>{
+   const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type=type;osc.frequency.value=freq;
+   const t=start+offset;gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(volume,t+.018);
+   gain.gain.exponentialRampToValueAtTime(.0001,t+duration+.12);
+   osc.connect(gain);gain.connect(audioCtx.destination);osc.start(t);osc.stop(t+duration+.14);
+  };
+  melody.forEach(([f,t,d])=>note(f,t,d));
+  [523.25,659.25,783.99,1046.5].forEach(f=>note(f,2.07,.9,'sine',.075));
+ }catch(e){}
+}
+function celebrate(auto=false){
+ if(celebrated)return;celebrated=true;
+ $('celebrateIcon').textContent=auto?'📖':'🏆🎉';
+ $('celebrateTitle').textContent=auto?'解答確認終了':'大成功！ クリア！';
+ $('celebrateText').textContent=auto?
+  '最短解答を最後まで確認しました。次は自分の力で挑戦してみよう！':
+  fmt(BigInt(history.length))+'手で達成！'+(BigInt(history.length)===total?' 最小手数でのクリア、お見事！':' よく頑張りました！');
+ $('celebrate').setAttribute('aria-label',auto?'解答確認終了':'クリア');
+ $('celebrate').classList.add('show');
+ if(auto)return; // 自動解答は祝福しない
+ const colors=['#ef476f','#ffd166','#06d6a0','#118ab2','#a78bfa'];
+ for(let i=0;i<110;i++){const el=document.createElement('i');el.style.left=(Math.random()*100)+'%';el.style.background=colors[i%colors.length];el.style.animationDelay=(Math.random()*1.2)+'s';el.style.animationDuration=(1.7+Math.random()*1.5)+'s';$('confetti').append(el)}
+ playFanfare();
+}
+$('closeCelebrate').addEventListener('click',hideCelebration);
+function choose(i){if(solutionMode){say('解答確認中です。「解答確認を終了」で自由操作に戻れます');return}if(rods[2].length===n){say('クリアしました！',true);return}if(selected===null){if(!rods[i].length){say('この棒には円盤がありません');return}selected=i;say('移動先の棒を選んでください');render();return}if(selected===i){selected=null;say('選択を解除しました');render();return}if(!move(selected,i)){say('大きな円盤は小さな円盤の上に置けません');return}render();if(rods[2].length===n){say('🎉 クリア！ '+history.length+'手で完成！'+(BigInt(history.length)===total?' 最小手数達成！':''),true);celebrate(false)}else say('次の円盤を選んでください')}
+function prepare(){if(solutionMode)return;hideCelebration();celebrated=false;stop();solutionMode=true;position=0n;rods=stateAt(position);history=[];selected=null;render();say('最初からの最短解答を表示します')}
+function advance(amount){position+=BigInt(amount);if(position>total)position=total;rods=stateAt(position);render();if(position===total){stop();say('最短解答の確認が終わりました。次は自分で挑戦！');celebrate(true)}else say('解答確認中：'+fmt(position)+' / '+fmt(total)+'手');return position<total}
+function tick(){if(!playing)return;const factor=Number(speed.value);const batch=factor===100?10:factor===10?2:1;const delay=factor===100?50:factor===10?100:500;const more=advance(batch);if(more&&playing)timer=setTimeout(tick,delay)}
+solution.addEventListener('click',()=>{prepare();if(position===total){say('解答は完了しています。最初からやり直してください');return}if(playing)return;playing=true;pause.disabled=false;solution.textContent='再生中…';render();timer=setTimeout(tick,Number(speed.value)===100?50:Number(speed.value)===10?100:500)});
+pause.addEventListener('click',()=>{if(!playing)return;stop();say('一時停止中：'+fmt(position)+' / '+fmt(total)+'手')});
+step.addEventListener('click',()=>{if(playing)return;prepare();advance(1)});
+endAnswer.addEventListener('click',()=>{hideCelebration();celebrated=false;stop();solutionMode=false;position=0n;history=[];rods=stateAt(0n);selected=null;render();say('解答確認を終了しました。自由に遊べます')});
+undo.addEventListener('click',()=>{if(!history.length||solutionMode)return;const [a,b]=history.pop();rods[a].push(rods[b].pop());selected=null;render();say('1手戻しました')});
+$('restart').addEventListener('click',reset);countEl.addEventListener('change',reset);reset();
+
+// ページ読み込み時に1回だけ記録し、応答待ちや再送は行わない。
+try {
+  fetch('https://script.google.com/macros/s/AKfycbxssCIHsD-N97SHxNC_GN0ihYeC0qy-lb-EY0KmSs6Gnztaph1sITMerLVEnNWOGkYc/exec?app=tower-of-hanoi', {
+    method: 'GET',
+    mode: 'no-cors',
+    cache: 'no-store',
+    credentials: 'omit',
+    keepalive: true,
+  }).catch(() => {});
+} catch {
+  // アクセス記録の失敗はゲームの動作に影響させない。
+}
+})();
+</script></body></html>
